@@ -17,5 +17,5 @@ The churn model is a secondary exercise. Its results and limits are in the READM
 ## Artefacts
 
 - Tables: `reports/tables/funnel.csv`, `roi_by_channel.csv`, `retention_by_channel.csv`.
-- Figures: `reports/figures/funnel.png`, `retention_heatmap.png`.
+- Figures: `reports/figures/funnel.png`, `roi_by_channel.png`, `retention_heatmap.png`.
 - Dashboards: Tableau story (see README embeds).
