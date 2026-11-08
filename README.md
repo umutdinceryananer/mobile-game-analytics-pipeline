@@ -100,10 +100,11 @@ After installing requirements, you can reproduce the pipeline without opening no
 
 1. `make data` - rebuilds `clean_data.csv` and `events.parquet` via the Typer CLI wrapper.
 2. `make features` - creates `features.csv` and `labels.csv` with the churn flag.
-3. `make train` - trains the churn models, writes metrics to `reports/tables/` and stores the best pipeline under `models/churn_model.pkl`.
-4. *(Optional)* `make predict` - uses the trained model to generate `predictions.csv` with churn probabilities.
+3. `make analytics` - writes the funnel, ROI/ROAS and retention tables and figures to `reports/`.
+4. `make train` - trains the churn models, writes metrics to `reports/tables/` and stores the best pipeline under `models/churn_model.pkl`.
+5. *(Optional)* `make predict` - uses the trained model to generate `predictions.csv` with churn probabilities.
 
-Shortcut: `make pipeline` runs steps 1-3 sequentially.
+Shortcut: `make pipeline` runs steps 1-4 sequentially.
 
 Each rule calls `python -m mobile_game_analytics_pipeline.<command>` under the hood, so you can invoke them directly if you prefer finer control over paths.
 
@@ -113,6 +114,7 @@ If you don't have `make`, run the same steps directly:
 # When Virtual Environment is Active
 python -m mobile_game_analytics_pipeline.dataset
 python -m mobile_game_analytics_pipeline.features
+python -m mobile_game_analytics_pipeline.analytics
 python -m mobile_game_analytics_pipeline.modeling.train
 python -m mobile_game_analytics_pipeline.modeling.predict  # optional
 
@@ -127,6 +129,7 @@ mobile_game_analytics_pipeline/
 │  ├─ config.py
 │  ├─ dataset.py               # Typer command: rebuild synthetic data
 │  ├─ features.py              # Typer command: create features & labels
+│  ├─ analytics.py             # Typer command: funnel, ROI/ROAS, retention tables
 │  ├─ modeling/
 │  │  ├─ __init__.py
 │  │  ├─ train.py              # Typer command: train churn model
@@ -274,7 +277,7 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 
 *Churn model (LogReg + XGBoost):* ROC-AUC  `0.607`, PR-AUC  `0.580`, accuracy  `0.602`; top 10% risk bucket captures ~`78%` of churn (lift  `1.17`).
 *Key segments:* Highest churn risk clusters in `Facebook` and `TikTok` installs on `Google Play`; see `reports/tables/churn_risk_segments.csv` for channel/platform drill-down.
-*Artifacts:* `reports/tables/backtest_scores.csv`, `reports/tables/model_metrics.json`, `reports/tables/churn_risk_segments.csv`, `reports/figures/roc_pr_curves.png`.
+*Artifacts:* `make train` writes `reports/tables/backtest_scores.csv`, `reports/tables/model_metrics.json` and `reports/figures/roc_pr_curves.png`. `reports/tables/churn_risk_segments.csv` is written only by notebook 3.0 and `_run_churn.py`.
 
 > Scores are measured on the synthetic demo dataset; expect lower performance on production data.
 
