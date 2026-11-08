@@ -112,9 +112,10 @@ After installing requirements, you can reproduce the pipeline without opening no
 2. `make features` - creates `features.csv` and `labels.csv` with the churn flag.
 3. `make analytics` - writes the funnel, ROI/ROAS and retention tables and figures to `reports/`.
 4. `make train` - trains the churn models, writes metrics to `reports/tables/` and stores the best pipeline under `models/churn_model.pkl`.
-5. *(Optional)* `make predict` - uses the trained model to generate `predictions.csv` with churn probabilities.
+5. `make dbt-build` - builds the dbt project in `dbt/` on DuckDB and runs its tests.
+6. *(Optional)* `make predict` - uses the trained model to generate `predictions.csv` with churn probabilities.
 
-Shortcut: `make pipeline` runs steps 1-4 sequentially.
+Shortcut: `make pipeline` runs steps 1-5 sequentially.
 
 Each rule calls `python -m mobile_game_analytics_pipeline.<command>` under the hood, so you can invoke them directly if you prefer finer control over paths.
 
@@ -127,6 +128,12 @@ python -m mobile_game_analytics_pipeline.features
 python -m mobile_game_analytics_pipeline.analytics
 python -m mobile_game_analytics_pipeline.modeling.train
 python -m mobile_game_analytics_pipeline.modeling.predict  # optional
+
+# dbt must run from inside dbt/ because its paths are relative to that directory
+cd dbt
+dbt deps
+dbt build
+cd ..
 
 ```
 
