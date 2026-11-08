@@ -103,7 +103,9 @@ pip install -r requirements.txt
 
 **Get the raw data**
 
-The raw file is not part of this repository. Download `cookie_cats.csv` from [Mobile Games: A/B Testing on Kaggle](https://www.kaggle.com/datasets/yufengsui/mobile-games-ab-testing) and save it as `data/raw/cookie_cats.csv`. `make data` stops with a `FileNotFoundError` if the file is missing.
+The raw file is not part of this repository. Download `cookie_cats.csv` from [Mobile Games: A/B Testing on Kaggle](https://www.kaggle.com/datasets/yufengsui/mobile-games-ab-testing) and save it as `data/raw/cookie_cats.csv`. The numbers in this README need that file.
+
+Without it, `make data` prints a warning and uses a fabricated file from `scripts/make_fabricated_raw_data.py`, so the pipeline still runs on a clean clone but its results will not match this README. Adding the real file later is enough: the next `make data` uses it. The direct `python -m` command below still needs the real file.
 
 ### Command-line Workflow
 
@@ -179,7 +181,7 @@ mobile_game_analytics_pipeline/
 │  └─ tests/                   # singular tests
 ├─ scripts/
 │  ├─ dbt_lineage_mermaid.py   # writes the README lineage diagram
-│  └─ make_ci_raw_data.py      # fabricated raw file, for CI only
+│  └─ make_fabricated_raw_data.py  # used when the Kaggle file is missing
 ├─ references/
 │  └─ sql/
 ├─ reports/
@@ -296,7 +298,8 @@ cd mobile-game-analytics-pipeline
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# Save the Kaggle download as data/raw/cookie_cats.csv, then:
+# Optional: save the Kaggle download as data/raw/cookie_cats.csv to get this README's numbers.
+# Without it, make data prints a warning and uses fabricated data.
 make pipeline      # data, features, analytics, train, dbt build
 pytest -q          # reads the outputs of make pipeline
 make dbt-docs      # opens the interactive documentation and lineage
@@ -384,7 +387,7 @@ cast(revenue as double) as revenue,
 | `assert_channel_installs_match_staging` | 1 | Channel install counts add up to the distinct players in staging |
 | `tests/test_dbt_parity.py` | 4 | Each mart matches its reference SQL row by row |
 
-CI (`.github/workflows/ci.yml`) runs `make data`, `make dbt-build` and `pytest -q` on every push and pull request. The Cookie Cats file is not in this repository, so CI uses a fabricated raw file from `scripts/make_ci_raw_data.py`. A green badge means the pipeline and tests work. It does not validate the numbers in this README, which come from a local run on the real file.
+CI (`.github/workflows/ci.yml`) runs `make data`, `make dbt-build` and `pytest -q` on every push and pull request. The Cookie Cats file is not in this repository, so `make data` falls back to a fabricated raw file from `scripts/make_fabricated_raw_data.py` there. A green badge means the pipeline and tests work. It does not validate the numbers in this README, which come from a local run on the real file.
 
 ---
 
