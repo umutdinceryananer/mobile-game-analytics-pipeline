@@ -1,3 +1,5 @@
+dbt-core==1.12.6
+dbt-duckdb==1.11.1
 duckdb==1.4.0
 joblib==1.5.2
 loguru>=0.7.0

@@ -1,0 +1,20 @@
+name: mobile_game_analytics
+version: "1.0.0"
+config-version: 2
+
+profile: mobile_game_analytics
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  mobile_game_analytics:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
