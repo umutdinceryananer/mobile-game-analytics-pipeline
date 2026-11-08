@@ -243,7 +243,7 @@ pre-commit install
 
 ## Part 3: Results, Visuals & Next Steps
 
-This section summarizes key insights, embeds exported figures, and outlines limitations and next actions. Replace the placeholder metrics below once the latest notebooks are executed.
+This section summarizes key insights, embeds exported figures, and outlines limitations and next actions.
 
 ---
 
