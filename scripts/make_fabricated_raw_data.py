@@ -1,9 +1,11 @@
-"""Write a fabricated Cookie-Cats-shaped raw file so CI can run without Kaggle.
+"""Write a fabricated Cookie-Cats-shaped raw file for runs without the Kaggle download.
 
-The real dataset is not in this repository. Every value written here is made up,
-so results built on this file say nothing about Cookie Cats and are never reported.
-The row count matches the real file because the statistical tests need that sample
-size.
+The real dataset is not in this repository. `make data` uses this file when
+data/raw/cookie_cats.csv is missing, which is also how CI runs. Every value written
+here is made up, so results built on it say nothing about Cookie Cats and do not
+match the numbers in the README. It is written to its own directory, so it can never
+be mistaken for the real file. The row count matches the real file because the
+statistical tests need that sample size.
 """
 
 from pathlib import Path
@@ -11,15 +13,18 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-RAW_PATH = Path(__file__).resolve().parents[1] / "data" / "raw" / "cookie_cats.csv"
+RAW_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "data"
+    / "raw"
+    / "fabricated"
+    / "cookie_cats.csv"
+)
 N_ROWS = 90_189
 SEED = 2024
 
 
 def main() -> None:
-    if RAW_PATH.exists():
-        raise FileExistsError(f"{RAW_PATH} already exists; refusing to overwrite it.")
-
     rng = np.random.default_rng(SEED)
     raw = pd.DataFrame(
         {
