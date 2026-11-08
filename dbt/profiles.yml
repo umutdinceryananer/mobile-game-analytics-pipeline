@@ -1,0 +1,7 @@
+mobile_game_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/warehouse/analytics.duckdb
+      threads: 4
