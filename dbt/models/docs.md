@@ -2,6 +2,10 @@
 Return on ad spend: revenue earned per unit of acquisition spend, calculated as `revenue / ad_spend`.
 {% enddocs %}
 
+{% docs revenue_per_install %}
+Revenue per install: average revenue earned from each installed player, calculated as `revenue / users`.
+{% enddocs %}
+
 {% docs roi %}
 Return on investment: net return per unit of acquisition spend, calculated as `(revenue - ad_spend) / ad_spend`.
 {% enddocs %}

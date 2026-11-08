@@ -65,8 +65,9 @@ models:
 
   - name: mart_channel_roi
     description: >
-      One row per acquisition channel with revenue, spend, ROI and ROAS. ROAS
-      differences come from the CAC values set in the synthetic config.
+      One row per acquisition channel with revenue, spend, ROI, ROAS and revenue
+      per install. ROAS differences come from the CAC values set in the synthetic
+      config.
     columns:
       - name: acquisition_channel
         description: Synthetic acquisition channel; the primary key.
@@ -91,5 +92,9 @@ models:
           - not_null
       - name: roas
         description: "{{ doc('roas') }}"
+        data_tests:
+          - not_null
+      - name: revenue_per_install
+        description: "{{ doc('revenue_per_install') }}"
         data_tests:
           - not_null
