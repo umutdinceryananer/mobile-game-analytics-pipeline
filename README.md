@@ -314,6 +314,7 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 * **Schema/coverage:** Missing events or short time windows can bias retention and ROI estimates; metrics are indicative.
 * **Attribution simplification:** Channel attribution is single-touch in this demo; multi-touch or MMM would alter ROI interpretation.
 * **Model scope:** The churn classifiers are compact prototypes with no hyperparameter search. Predicted probabilities are not calibrated: the logistic model uses `class_weight="balanced"`, so its scores work as a ranking rather than as churn probabilities.
+* **Label-window leakage:** `session_count` is the Cookie Cats column `sum_gamerounds`, which the dataset description defines as "the number of game rounds played by the player during the first 14 days after install". That window overlaps the D7 retention label, and the churn model uses `session_count` as a feature, along with `revenue` and `ROI`, which are derived from it. Its scores therefore include behaviour from after the day the label refers to. In this synthetic build `retention_7` is also generated directly from `session_count`. The model is unchanged, so read its metrics with this leak in mind.
 
 ---
 
