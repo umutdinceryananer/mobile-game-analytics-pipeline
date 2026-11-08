@@ -10,21 +10,21 @@
 
 ## Executive Summary
 
-This repository demonstrates a comprehensive analytics workflow for marketing performance analysis, covering user funnel optimization, retention cohorts, trend analysis, and predictive modeling. The project showcases modern data analysis techniques including SQL-driven reporting, dashboard development, and data integrity monitoring to extract valuable insights from marketing data and drive strategic decision-making.
+This repository is a SQL and Python analytics pipeline run on synthetic data with known effects. It starts from the Cookie Cats player table, generates channel, retention, purchase and revenue fields from `data/config/synthetic.yaml`, and then builds funnel, retention and ROI/ROAS tables. Because the effects are set in the config, the outputs can be checked against them. Every figure in this README describes that synthetic data, not a real game or a real marketing budget.
 
 ### What this project demonstrates?
 
-* Actionable analytics: funnel, ROI/ROAS, retention, and churn signals tied directly to UA decisions.
-* Cohort retention: D1/D7 cohort analysis by acquisition channel and platform highlights where to invest or iterate.
-* Predictive modeling: churn-classification pipeline (LogReg + XGBoost) with documented lift and Tableau integration.
-* Reporting craft: reproducible SQL, polished notebooks, and exportable figures/dashboard embeds.
+* Known-effect recovery: the retention channel effects set in the config are recovered from the pipeline output, checked by `tests/test_channel_effects.py`. The claim covers those retention effects only.
+* Reproducible reporting: funnel, D1/D7 retention and ROI/ROAS by channel, built with externalized DuckDB SQL and Python and exported as tables and figures.
+* Data checks: pytest coverage of the schema, distributions, the ROI formula and channel effects.
 
-### Latest Metrics (synthetic run)
+### Latest Metrics (synthetic data)
+
+All values come from one `make pipeline` run on the synthetic build (seed 42). They reflect the generator's configuration and are not measurements of a real game.
 
 * **Funnel (ratios of stage totals):** Install to Onboarding 95.6%, Onboarding to D1 47.6%, D1 to D7 73.2%, D7 to Purchase 16.8%. The stages are not nested cohorts: 39.3% of D7 returners have no D1 return.
 * **Retention:** Overall D1 45.5%, D7 33.3%; Organic D1 47.7%, D7 35.2%. Among players who returned on D1, 44.4% also returned on D7 (Organic 45.5%).
-* **ROI:** Organic ROAS ~1.85 (ROI ~+85%); paid channels range 0.19-0.34 ROAS (ROI -66% to -81%).
-* **Churn model:** ROC-AUC 0.622, PR-AUC 0.744, accuracy 0.665 (XGBoost, the model `make train` stored). The churn rate is 66.7% overall and 76.8% in the riskiest 10% of players (lift 1.15x), and that 10% contains 11.5% of all churners.
+* **ROI/ROAS:** Organic ROAS 1.85 (ROI +85%); paid channels range 0.19-0.34 ROAS (ROI -66% to -81%). These differences come entirely from the CAC values in the config; the generator has no channel effect on purchases or revenue.
 
 ### Data & Scope
 
@@ -41,8 +41,6 @@ This repository demonstrates a comprehensive analytics workflow for marketing pe
 | `CAC` | Synthetic | Fixed per channel in the config |
 | `revenue` | Synthetic | Gamma-distributed purchase value for purchasers plus ad revenue from `session_count`, scaled by platform; no channel effect |
 | `ROI` | Derived | `(revenue - CAC) / CAC` |
-
-* Decisions supported: Budget reallocation across channels, creative/testing priorities, onboarding/FTUE optimizations, and retention-oriented product bets.
 
 ### Deliverables
 
@@ -262,15 +260,15 @@ pre-commit install
 
 ---
 
-## Part 3: Results, Visuals & Next Steps
+## Results on Synthetic Data
 
-This section summarizes key insights, embeds exported figures, and outlines limitations and next actions.
+This section compares what the config sets with what the SQL and Python layers report back, embeds exported figures, and lists limitations. Nothing here is evidence about a real game or a real budget.
 
 ---
 
 ### Results Overview (Key Findings)
 
-**Acquisition & Funnel**
+**Funnel**
 
 | Stage | Users | Share of installs | Ratio to previous stage |
 |---|---|---|---|
@@ -282,30 +280,57 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 
 These are ratios of stage totals, not conversion rates, because the generated flags are not nested: 11,798 D7 returners (39.3%) have no D1 return, 1,849 of the 5,030 purchasers have no D1 return, and 1,220 D1 returners have `session_count` = 0.
 
-* *Action:* Focus UX experiments on the largest drop (e.g., onboarding), and validate with an A/B test.
+**ROI/ROAS by Channel: set by the config**
 
-**ROI/ROAS by Channel**
+ROAS differences across channels come entirely from the CAC values set in the config. The generator has no channel term in purchases or revenue, so the small differences in revenue per user below are sampling noise. The ROAS ranking restates the CAC inputs and is not a finding about the channels.
 
-* **Top channel:** `Organic` delivers **ROAS ~`1.85`**, **ROI ~`+85%`**, and is the only source above break-even.
-* **Underperformers:** Paid UA (e.g., `TikTok` ROAS ~`0.34`, `Instagram` ROAS ~`0.23`, `Facebook` ROAS ~`0.19`) remains below break-even.
-* *Action:* Reallocate **+10-20% UA budget** to top channels; test creative iteration for low-ROAS channels before further spend.
+| Channel | Config CAC | Purchase rate | Revenue per user | ROAS | ROI |
+|---|---|---|---|---|---|
+| Organic | 0.30 | 5.5% | 0.556 | 1.85 | +85% |
+| TikTok | 1.70 | 5.5% | 0.579 | 0.34 | -66% |
+| Instagram | 2.30 | 5.6% | 0.531 | 0.23 | -77% |
+| Facebook | 2.80 | 5.6% | 0.542 | 0.19 | -81% |
 
-**Retention Cohorts (D1/D7)**
+**Retention by Channel: recovered from the output**
 
-* **D1 retention:** overall `45.5%`; `Organic` `47.7%`.
-* **D7 retention:** `33.3%` of installs return on day 7; `Organic` `35.2%`.
-* **D1 to D7:** among players who returned on D1, `44.4%` also returned on D7 (`Organic` `45.5%`), against `24.0%` of players who did not return on D1. The `d7_from_d1` column in `retention_by_channel.csv` (`73.8%` for `Organic`) is a ratio of two totals, not this conditional rate.
-* *Action:* Prioritize **best-quality sources** (high D7) for long-term value; refine onboarding for channels with high D1 but weak D7.
+`tests/test_channel_effects.py` fits the generator's logistic form on `events.parquet` and compares the channel effects with the config. Values are logit effects relative to Organic.
 
-**Churn model**
+| Channel vs Organic | D1 config | D1 fitted | D7 config | D7 fitted |
+|---|---|---|---|---|
+| Instagram | -0.08 | -0.069 | -0.06 | -0.050 |
+| Facebook | -0.14 | -0.110 | -0.11 | -0.089 |
+| TikTok | -0.16 | -0.138 | -0.13 | -0.105 |
 
-*Churn model (LogReg + XGBoost):* the stored XGBoost model scores ROC-AUC `0.622`, PR-AUC `0.744`, accuracy `0.665` on the 30% holdout. The churn rate is `66.7%` overall and `76.8%` in the riskiest 10% of players (lift `1.15x`), and that 10% contains `11.5%` of all churners.
-*Key segments:* Highest churn risk clusters in `Facebook` and `TikTok` installs on `Google Play`; see `reports/tables/churn_risk_segments.csv` for channel/platform drill-down.
+All six fitted effects are within 3 standard errors of the config (standard errors 0.024 to 0.028). Direction is tested only where the config value is at least 3 standard errors from zero, which leaves out D7 Instagram. This recovery claim covers these retention channel effects only.
+
+| Channel | D1 rate | D7 rate | D7 among D1 returners |
+|---|---|---|---|
+| Organic | 47.7% | 35.2% | 45.5% |
+| Instagram | 46.0% | 33.8% | 44.9% |
+| Facebook | 44.9% | 32.7% | 43.9% |
+| TikTok | 44.3% | 32.2% | 43.7% |
+
+Overall, `45.5%` of installs return on D1 and `33.3%` on D7. Among players who returned on D1, `44.4%` also returned on D7, against `24.0%` of players who did not return on D1. The `d7_from_d1` column in `retention_by_channel.csv` (`73.8%` for `Organic`) is a ratio of two totals, not this conditional rate.
+
+---
+
+### Churn Model (Secondary, With Limits)
+
+A compact classifier on the synthetic data, kept as a modelling exercise. It is not part of the recovery claim above. The label is `churn_flag`, the inverse of `retention_7`. `make train` fits both models and stores the one with the higher test ROC-AUC. Scores are from a stratified 30% holdout (27,057 players, seed 42).
+
+| Model | ROC-AUC | PR-AUC | Accuracy | Churn rate in riskiest 10% | Lift | Share of churners in riskiest 10% |
+|---|---|---|---|---|---|---|
+| XGBoost (stored in this run) | 0.622 | 0.744 | 0.665 | 76.8% | 1.15x | 11.5% |
+| Logistic regression | 0.621 | 0.746 | 0.615 | 78.3% | 1.17x | 11.7% |
+
+For the stored XGBoost model, the churn rate is 66.7% overall and 76.8% in the riskiest 10% of players (lift 1.15x), and that 10% contains 11.5% of all churners.
+
+* The two models differ by less than 0.001 in ROC-AUC, so which one gets stored is close to arbitrary.
+* Always predicting churn scores 0.667 accuracy, so neither model beats that baseline on accuracy.
+* The features overlap the D7 label window and the scores are not calibrated (see Limitations & Assumptions).
+* These scores are measured on synthetic data and say nothing about performance on real data.
+
 *Artifacts:* `make train` writes `reports/tables/backtest_scores.csv`, `reports/tables/model_metrics.json` and `reports/figures/roc_pr_curves.png`. `reports/tables/churn_risk_segments.csv` is written only by notebook 3.0 and `_run_churn.py`.
-
-> Scores are measured on the synthetic demo dataset; expect lower performance on production data.
-
-> Record the finalized numbers in `reports/executive_summary.md` as a single-page narrative for reviewers.
 
 ---
 
@@ -317,13 +342,15 @@ These are ratios of stage totals, not conversion rates, because the generated fl
 * **D7 Retention Heatmap (version by channel)**
   <img width="1408" height="761" alt="retention_heatmap" src="https://github.com/user-attachments/assets/dfa39f95-d226-4744-bcb6-5cc17447732c" />
 
-* **Modeling **
+* **Churn model ROC/PR (logistic regression, from an earlier run)**
   <img width="1784" height="731" alt="roc_pr_curves" src="https://github.com/user-attachments/assets/54a1dec0-2464-4f8d-b1b3-e62ac78406b8" />
 
 ---
 
 ### Dashboard (Tableau)
 * [**Tableau Link**](https://public.tableau.com/views/MobileGameUAStory/TableauStory?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+
+Built from an earlier run on the same synthetic data. The model dashboard shows logistic regression, and its "Avg Churn %" values are uncalibrated model scores, not churn rates.
 
 <img width="1415" height="1063" alt="Tableau Story Part 1" src="https://github.com/user-attachments/assets/61a34373-ea43-46af-ba2c-79cc4bfa10c5" />
 <img width="1415" height="1063" alt="Tableau Story Part 2" src="https://github.com/user-attachments/assets/5ab6fbba-b391-47a5-9d66-a86f7545c683" />
