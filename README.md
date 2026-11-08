@@ -73,16 +73,21 @@ This section explains **how to run the project end'to'end**, how SQL/Notebooks a
 **Create and activate a virtual environment**
 
 ```bash
-# macOS/Linux
-python -m venv .venv && source .venv/bin/activate
+# macOS/Linux (on Debian/Ubuntu, install the python3-venv package first)
+python3 -m venv .venv && source .venv/bin/activate
 
 # Windows (PowerShell)
 python -m venv .venv; .\.venv\Scripts\Activate.ps1
 ```
+
 **Install Requirements**
 
 ```bash
-./scripts/install.ps1   
+# macOS/Linux
+pip install -r requirements.txt
+
+# Windows (PowerShell), also prints the welcome banner
+./scripts/install.ps1
 ```
 
 ### Command-line Workflow
