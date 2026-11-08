@@ -23,10 +23,19 @@ requirements:
 # PROJECT RULES                                                                 #
 #################################################################################
 
+RAW_CSV = data/raw/cookie_cats.csv
+FABRICATED_RAW_CSV = data/raw/fabricated/cookie_cats.csv
+
 ## Rebuild synthetic dataset (clean_data.csv, events.parquet)
 .PHONY: data
 data:
+ifeq ($(wildcard $(RAW_CSV)),)
+	@echo "WARNING: $(RAW_CSV) not found. Using fabricated data, so results will not match the README."
+	$(PYTHON_INTERPRETER) scripts/make_fabricated_raw_data.py
+	$(PYTHON_INTERPRETER) -m mobile_game_analytics_pipeline.dataset --raw-csv $(FABRICATED_RAW_CSV)
+else
 	$(PYTHON_INTERPRETER) -m mobile_game_analytics_pipeline.dataset
+endif
 
 ## Generate feature and label tables for modeling
 .PHONY: features
