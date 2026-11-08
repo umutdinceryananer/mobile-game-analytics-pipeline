@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # The Cookie Cats file is not in this repository, so CI uses fabricated data.
+      - name: Generate fabricated raw data
+        run: python scripts/make_ci_raw_data.py
+
+      - name: Build the synthetic dataset
+        run: make data
+
+      - name: Build dbt models and run dbt tests
+        run: make dbt-build
+
+      - name: Run pytest
+        run: pytest -q
