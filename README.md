@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This repository demonstrates a comprehensive analytics workflow for marketing performance analysis, covering user funnel optimization, retention cohorts, trend analysis, and predictive modeling. The project showcases modern data analysis techniques including SQL-driven reporting, dashboard development, data integrity monitoring, and ROI forecasting to extract valuable insights from marketing data and drive strategic decision-making.
+This repository demonstrates a comprehensive analytics workflow for marketing performance analysis, covering user funnel optimization, retention cohorts, trend analysis, and predictive modeling. The project showcases modern data analysis techniques including SQL-driven reporting, dashboard development, and data integrity monitoring to extract valuable insights from marketing data and drive strategic decision-making.
 
 ### What this project demonstrates?
 
@@ -184,7 +184,7 @@ Run notebooks **top-down** in this order:
 4. **`2.1-Retention-Cohorts.ipynb`**
    Produces D1/D7 cohort heatmaps; exports `retention_by_channel.csv` and `retention_heatmap.png`.
 
-5. **`3.0-Forecast-or-Churn.ipynb`**
+5. **`3.0-Churn-Model.ipynb`**
    Churn classification (LogReg + XGBoost/LightGBM). Exports `model_metrics.json` and one key figure (`roc_pr_curves.png`).
 
 ---
@@ -207,7 +207,7 @@ All notebooks **export tables and figures** to a consistent location:
   * `funnel.csv`, `funnel_long.csv`, `roi_by_channel.csv`, `roi_by_channel_long.csv`, `retention_by_channel.csv`, `retention_cohort_by_version.csv`
 
 * **Figures:** `reports/figures/`
-  * `funnel.png`, `roi_by_channel.png`, `retention_heatmap.png`, `forecast_plot.png` or `roc_pr_curves.png`
+  * `funnel.png`, `roi_by_channel.png`, `retention_heatmap.png`, `roc_pr_curves.png`
 
 * **Summary:** `reports/executive_summary.md` (curated manually from notebook findings)
 
@@ -269,7 +269,7 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 * **D7 retention:** ~`33.3%` of installs return on day 7, and `Organic` keeps ~`73.8%` of its D1 returners through D7.
 * *Action:* Prioritize **best-quality sources** (high D7) for long-term value; refine onboarding for channels with high D1 but weak D7.
 
-* **Prediction/Forecast **
+**Churn model**
 
 *Churn model (LogReg + XGBoost):* ROC-AUC  `0.607`, PR-AUC  `0.580`, accuracy  `0.602`; top 10% risk bucket captures ~`78%` of churn (lift  `1.17`).
 *Key segments:* Highest churn risk clusters in `Facebook` and `TikTok` installs on `Google Play`; see `reports/tables/churn_risk_segments.csv` for channel/platform drill-down.
@@ -308,7 +308,7 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 * **Synthetic enrichment:** User acquisition fields (e.g., `acquisition_channel`, CAC/ad spend) are enriched and may not reflect production distributions.
 * **Schema/coverage:** Missing events or short time windows can bias retention and ROI estimates; metrics are indicative.
 * **Attribution simplification:** Channel attribution is single-touch in this demo; multi-touch or MMM would alter ROI interpretation.
-* **Model scope:** Forecasts/classifiers are compact prototypes (no hyper-intensive tuning). Calibration and backtesting are included to keep results honest.
+* **Model scope:** The churn classifiers are compact prototypes (no hyper-intensive tuning). Calibration and backtesting are included to keep results honest.
 
 ---
 
