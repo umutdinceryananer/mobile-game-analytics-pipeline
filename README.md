@@ -55,7 +55,7 @@ This repository demonstrates a comprehensive analytics workflow for marketing pe
 
 ## Usage & Reproducibility
 
-This section explains **how to run the project end'to'end**, how SQL/Notebooks are wired, and where artifacts are exported. It is written to be **copy'paste runnable** on a fresh machine.
+This section explains **how to run the project end-to-end**, how SQL/Notebooks are wired, and where artifacts are exported. It is written to be **copy-paste runnable** on a fresh machine.
 
 ---
 
@@ -107,14 +107,14 @@ Shortcut: `make pipeline` runs steps 1-3 sequentially.
 
 Each rule calls `python -m mobile_game_analytics_pipeline.<command>` under the hood, so you can invoke them directly if you prefer finer control over paths.
 
-If you dont have make and dont want to install it you can use given commands;
+If you don't have `make`, run the same steps directly:
 
 ```
 # When Virtual Environment is Active
 python -m mobile_game_analytics_pipeline.dataset
 python -m mobile_game_analytics_pipeline.features
 python -m mobile_game_analytics_pipeline.modeling.train
-python -m mobile_game_analytics_pipeline.modeling.predict  # opsiyonel
+python -m mobile_game_analytics_pipeline.modeling.predict  # optional
 
 ```
 
@@ -170,7 +170,7 @@ mobile_game_analytics_pipeline/
 
 ### Running Order
 
-Run notebooks **top'down** in this order:
+Run notebooks **top-down** in this order:
 
 1. **`0.9-SQL-Validation-and-Samples.ipynb`**
    Loads SQL from `references/sql/` and executes via DuckDB. Exports validation tables to `reports/tables/`.
@@ -237,11 +237,11 @@ pre-commit install
 * **Determinism:** set seeds for model training and sampling (e.g., `numpy`, `random`, model libraries).
 * **No Leakage:** split by **time** for validation (rolling or holdout) and build features only from the past window.
 * **Versioning:** tag releases when major deliverables change (e.g., `v0.1` MVP, `v0.2` cohorts deep dive, `v0.3` modeling).
-* **Environment:** keep `requirements.txt` up to date; pin critical libs if needed for a clean re'run.
+* **Environment:** keep `requirements.txt` up to date; pin critical libs if needed for a clean re-run.
 
 ---
 
-## Part 3 " Results, Visuals & Next Steps
+## Part 3: Results, Visuals & Next Steps
 
 This section summarizes key insights, embeds exported figures, and outlines limitations and next actions. Replace the placeholder metrics below once the latest notebooks are executed.
 
@@ -277,7 +277,7 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 
 > Scores are measured on the synthetic demo dataset; expect lower performance on production data.
 
-> Record the finalized numbers in `reports/executive_summary.md` as a single'page narrative for reviewers.
+> Record the finalized numbers in `reports/executive_summary.md` as a single-page narrative for reviewers.
 
 ---
 
@@ -307,7 +307,7 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 
 * **Synthetic enrichment:** User acquisition fields (e.g., `acquisition_channel`, CAC/ad spend) are enriched and may not reflect production distributions.
 * **Schema/coverage:** Missing events or short time windows can bias retention and ROI estimates; metrics are indicative.
-* **Attribution simplification:** Channel attribution is 1'touch in this demo; multi'touch or MMM would alter ROI interpretation.
+* **Attribution simplification:** Channel attribution is single-touch in this demo; multi-touch or MMM would alter ROI interpretation.
 * **Model scope:** Forecasts/classifiers are compact prototypes (no hyper-intensive tuning). Calibration and backtesting are included to keep results honest.
 
 ---
@@ -315,6 +315,6 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 ### License & Credits
 
 * Code is released under **MIT License** (see `LICENSE`).
-* Dataset: Cookie Cats (Kaggle) " used here for educational/demo purposes with synthetic UA enrichment.
+* Dataset: Cookie Cats (Kaggle), used here for educational/demo purposes with synthetic UA enrichment.
 
 ---
