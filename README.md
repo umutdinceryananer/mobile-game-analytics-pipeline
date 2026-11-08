@@ -22,7 +22,7 @@ This repository demonstrates a comprehensive analytics workflow for marketing pe
 ### Latest Metrics (synthetic run)
 
 * **Funnel (ratios of stage totals):** Install to Onboarding 95.6%, Onboarding to D1 47.6%, D1 to D7 73.2%, D7 to Purchase 16.8%. The stages are not nested cohorts: 39.3% of D7 returners have no D1 return.
-* **Retention:** Overall D7 ~33.3%; Organic keeps ~73.8% of its D1 returners (D7 ~35.2%).
+* **Retention:** Overall D1 45.5%, D7 33.3%; Organic D1 47.7%, D7 35.2%. Among players who returned on D1, 44.4% also returned on D7 (Organic 45.5%).
 * **ROI:** Organic ROAS ~1.85 (ROI ~+85%); paid channels range 0.19-0.34 ROAS (ROI -66% to -81%).
 * **Churn model:** ROC-AUC ~0.61, PR-AUC ~0.58, accuracy ~0.60; top 10% risk bucket captures ~78% of churn (lift ~1.17x).
 
@@ -292,8 +292,9 @@ These are ratios of stage totals, not conversion rates, because the generated fl
 
 **Retention Cohorts (D1/D7)**
 
-* **D1 retention:** overall average ~`45.5%`; `Organic` leads at ~`47.7%`.
-* **D7 retention:** ~`33.3%` of installs return on day 7, and `Organic` keeps ~`73.8%` of its D1 returners through D7.
+* **D1 retention:** overall `45.5%`; `Organic` `47.7%`.
+* **D7 retention:** `33.3%` of installs return on day 7; `Organic` `35.2%`.
+* **D1 to D7:** among players who returned on D1, `44.4%` also returned on D7 (`Organic` `45.5%`), against `24.0%` of players who did not return on D1. The `d7_from_d1` column in `retention_by_channel.csv` (`73.8%` for `Organic`) is a ratio of two totals, not this conditional rate.
 * *Action:* Prioritize **best-quality sources** (high D7) for long-term value; refine onboarding for channels with high D1 but weak D7.
 
 **Churn model**
