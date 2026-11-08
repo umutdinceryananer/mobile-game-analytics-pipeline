@@ -239,7 +239,8 @@ pre-commit install
 ### Reproducibility Notes
 
 * **Determinism:** set seeds for model training and sampling (e.g., `numpy`, `random`, model libraries).
-* **No Leakage:** split by **time** for validation (rolling or holdout) and build features only from the past window.
+* **Train/test split:** `mobile_game_analytics_pipeline/modeling/train.py` uses a random stratified 70/30 holdout (`train_test_split(..., stratify=y)`) and shuffled 5-fold `StratifiedKFold` on the training portion. `backtest_scores.csv` holds those cross-validation folds, not a temporal backtest.
+* **Recommendation for real data:** this dataset has no timestamp column, so a time-based split is not possible here. On real event data, validate with a time-based holdout instead.
 * **Versioning:** tag releases when major deliverables change (e.g., `v0.1` MVP, `v0.2` cohorts deep dive, `v0.3` modeling).
 * **Environment:** keep `requirements.txt` up to date; pin critical libs if needed for a clean re-run.
 
