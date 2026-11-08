@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: int_user_funnel
+    description: >
+      One row per player; the grain is user_id. Holds the funnel flags and the
+      revenue and spend amounts that every mart aggregates, so that this logic
+      lives in one place.
+    columns:
+      - name: user_id
+        description: Player identifier and primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: acquisition_channel
+        description: Synthetic acquisition channel.
+        data_tests:
+          - not_null
+      - name: install_flag
+        description: Always 1, because every row is an installed player.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1]
+                quote: false
+      - name: d1_flag
+        description: 1 if the player returned on day 1, otherwise 0.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+      - name: d7_flag
+        description: 1 if the player returned on day 7, otherwise 0.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+      - name: purchase_flag
+        description: 1 if the player made a purchase, otherwise 0.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+      - name: revenue
+        description: Revenue from this player, with missing values set to 0.
+        data_tests:
+          - not_null
+      - name: ad_spend
+        description: Acquisition cost of this player, with missing values set to 0.
+        data_tests:
+          - not_null
