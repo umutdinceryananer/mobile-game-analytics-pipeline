@@ -28,6 +28,9 @@ CASES = [
     ("roi_by_channel.sql", "mart_channel_roi", ["acquisition_channel"]),
 ]
 
+# Mart columns added after the migration, which the reference SQL does not have.
+ADDED_COLUMNS = {"mart_channel_roi": ["revenue_per_install"]}
+
 # Same view definition as notebooks/0.9-SQL-Validation-and-Samples.ipynb.
 CREATE_USERS_VIEW = """
     CREATE OR REPLACE VIEW users AS
@@ -82,9 +85,10 @@ def test_mart_matches_reference_sql(
     expected = reference_connection.execute(query).df()
     actual = warehouse_connection.execute(f"SELECT * FROM main.{mart}").df()
 
-    assert list(actual.columns) == list(expected.columns)
+    added = ADDED_COLUMNS.get(mart, [])
+    assert list(actual.columns) == list(expected.columns) + added
     assert_frame_equal(
-        _sorted(actual, keys),
+        _sorted(actual.drop(columns=added), keys),
         _sorted(expected, keys),
         check_dtype=False,
         check_exact=False,

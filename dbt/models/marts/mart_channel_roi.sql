@@ -25,7 +25,8 @@ final as (
         revenue,
         ad_spend,
         case when ad_spend > 0 then (revenue - ad_spend) / ad_spend end as roi,
-        case when ad_spend > 0 then revenue / ad_spend end as roas
+        case when ad_spend > 0 then revenue / ad_spend end as roas,
+        {{ dbt_utils.safe_divide('revenue', 'users') }} as revenue_per_install
 
     from totals
 
