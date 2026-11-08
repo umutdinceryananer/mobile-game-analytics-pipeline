@@ -169,8 +169,8 @@ def generate_roi(df: pd.DataFrame, tables_dir: Path, figures_dir: Path) -> None:
     ax.set_title("Channel ROAS")
     ax.axvline(1.0, color="red", linestyle="--", linewidth=1, label="Break-even ROAS")
     ax.legend(loc="lower right")
-    for idx, row in roi_by_channel.iterrows():
-        ax.text(row["roas"] + 0.05, idx, f"{row['roas']:.2f}", va="center")
+    for position, (_, row) in enumerate(roi_by_channel.iterrows()):
+        ax.text(row["roas"] + 0.05, position, f"{row['roas']:.2f}", va="center")
     fig.tight_layout()
     roi_fig_path = figures_dir / "roi_by_channel.png"
     fig.savefig(roi_fig_path, dpi=150, bbox_inches="tight")
