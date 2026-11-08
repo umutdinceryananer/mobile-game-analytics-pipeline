@@ -47,11 +47,11 @@ models:
               arguments:
                 min_value: 0
       - name: is_retained_d1
-        description: Whether the player returned on day 1 (regenerated).
+        description: "{{ doc('d1_retention') }} Regenerated from the synthetic config."
         data_tests:
           - not_null
       - name: is_retained_d7
-        description: Whether the player returned on day 7 (regenerated).
+        description: "{{ doc('d7_retention') }} Regenerated from the synthetic config."
         data_tests:
           - not_null
       - name: has_purchased

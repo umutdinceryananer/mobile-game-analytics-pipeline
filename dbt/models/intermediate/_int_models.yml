@@ -24,14 +24,14 @@ models:
                 values: [1]
                 quote: false
       - name: d1_flag
-        description: 1 if the player returned on day 1, otherwise 0.
+        description: "1 if the player returned on day 1, otherwise 0. {{ doc('d1_retention') }}"
         data_tests:
           - accepted_values:
               arguments:
                 values: [0, 1]
                 quote: false
       - name: d7_flag
-        description: 1 if the player returned on day 7, otherwise 0.
+        description: "1 if the player returned on day 7, otherwise 0. {{ doc('d7_retention') }}"
         data_tests:
           - accepted_values:
               arguments:
