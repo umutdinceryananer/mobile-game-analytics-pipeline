@@ -63,6 +63,12 @@ dbt-build: dbt-deps
 dbt-docs: dbt-deps
 	cd dbt && dbt docs generate && dbt docs serve
 
+## Regenerate the Mermaid lineage diagram in README.md
+.PHONY: dbt-lineage
+dbt-lineage: dbt-deps
+	cd dbt && dbt parse
+	$(PYTHON_INTERPRETER) scripts/dbt_lineage_mermaid.py
+
 ## Run full pipeline (data -> features -> analytics -> train -> dbt build)
 .PHONY: pipeline
 pipeline: data features analytics train dbt-build

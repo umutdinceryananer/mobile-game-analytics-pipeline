@@ -4,6 +4,7 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
+[![CI](https://github.com/umutdinceryananer/mobile-game-analytics-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/umutdinceryananer/mobile-game-analytics-pipeline/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 ![DuckDB](https://img.shields.io/badge/DuckDB-SQL-yellow?logo=duckdb&logoColor=white)
@@ -156,6 +157,7 @@ mobile_game_analytics_pipeline/
 │  ├─ raw/
 │  │  └─ cookie_cats.csv
 │  ├─ processed/               # clean_data.csv, events.parquet, features.csv, labels.csv
+│  ├─ warehouse/               # analytics.duckdb, built by dbt
 │  ├─ config/
 │  │  └─ synthetic.yaml
 │  └─ make_dataset.py
@@ -165,6 +167,19 @@ mobile_game_analytics_pipeline/
 │  ├─ 2.0-ROI-and-ROAS-by-Channel.ipynb
 │  ├─ 2.1-Retention-Cohorts.ipynb
 │  └─ 3.0-Churn-Model.ipynb
+├─ dbt/
+│  ├─ dbt_project.yml
+│  ├─ profiles.yml
+│  ├─ packages.yml
+│  ├─ models/
+│  │  ├─ docs.md               # metric definitions used by model descriptions
+│  │  ├─ staging/
+│  │  ├─ intermediate/
+│  │  └─ marts/
+│  └─ tests/                   # singular tests
+├─ scripts/
+│  ├─ dbt_lineage_mermaid.py   # writes the README lineage diagram
+│  └─ make_ci_raw_data.py      # fabricated raw file, for CI only
 ├─ references/
 │  └─ sql/
 ├─ reports/
@@ -173,6 +188,7 @@ mobile_game_analytics_pipeline/
 │  └─ executive_summary.md
 ├─ tests/
 │  ├─ test_channel_effects.py
+│  ├─ test_dbt_parity.py
 │  └─ test_synthetic.py
 ├─ Makefile
 ├─ requirements.txt
@@ -212,7 +228,7 @@ Run notebooks **top-down** in this order:
 
 ### SQL Usage (Externalized & Reused)
 
-SQL is stored in **`references/sql/`** and loaded from notebooks at runtime.
+SQL is stored in **`references/sql/`** and loaded from notebook 0.9 at runtime. The dbt marts reproduce these queries; see dbt Layer.
 
 * `references/sql/installs_by_channel.sql`
 * `references/sql/funnel_step_rates.sql`
@@ -237,7 +253,7 @@ All notebooks **export tables and figures** to a consistent location:
 
 ### Data Quality Checks & Testing
 
-Run these after `make pipeline`; the tests read `data/processed/events.parquet`.
+Run these after `make pipeline`; the tests read its outputs.
 
 ```bash
 pytest -q
@@ -245,6 +261,7 @@ pytest -q
 
 * `tests/test_synthetic.py` validates the schema, allowed channel values, country and platform distributions, platform revenue shares, and the ROI formula for the synthetic dataset.
 * `tests/test_channel_effects.py` fits the generator's logistic form on `events.parquet` and checks that the retention channel effects set in the config are recovered within 3 standard errors, with a shuffled-label negative control. It also runs `analytics.py` and checks that Organic retention is above TikTok and that spend per user equals the config CAC.
+* `tests/test_dbt_parity.py` runs each query in `references/sql/` and compares the result row by row with the matching dbt mart.
 * CLI smoke test: `make pipeline` (or run the Typer commands manually) regenerates data, features, and churn model artefacts end-to-end.
 
 #### Enabling Pre-commit Hooks
@@ -264,6 +281,108 @@ pre-commit install
 * **Recommendation for real data:** this dataset has no timestamp column, so a time-based split is not possible here. On real event data, validate with a time-based holdout instead.
 * **Versioning:** tag releases when major deliverables change (e.g., `v0.1` MVP, `v0.2` cohorts deep dive, `v0.3` modeling).
 * **Environment:** keep `requirements.txt` up to date; pin critical libs if needed for a clean re-run.
+
+---
+
+## dbt Layer
+
+The four KPI queries in `references/sql/` are also built as a dbt project on DuckDB, in `dbt/`. The marts are the definition of these metrics. `references/sql/` stays so that `tests/test_dbt_parity.py` can prove the marts return the same values, and notebook 0.9 still reads it. `analytics.py` and the notebooks produce the CSV and PNG exports separately from dbt.
+
+### Run from a clean clone
+
+```bash
+git clone https://github.com/umutdinceryananer/mobile-game-analytics-pipeline.git
+cd mobile-game-analytics-pipeline
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+
+# Save the Kaggle download as data/raw/cookie_cats.csv, then:
+make pipeline      # data, features, analytics, train, dbt build
+pytest -q          # reads the outputs of make pipeline
+make dbt-docs      # opens the interactive documentation and lineage
+```
+
+`make dbt-lineage` regenerates the diagram below. To run dbt by hand, run it from inside `dbt/`, because its paths are relative to that directory.
+
+### Lineage
+
+<!-- dbt-lineage:start -->
+```mermaid
+flowchart LR
+    subgraph sources
+        source_mobile_game_analytics_game_events[("game.events")]
+    end
+    subgraph staging
+        model_mobile_game_analytics_stg_game__users["stg_game__users"]
+    end
+    subgraph intermediate
+        model_mobile_game_analytics_int_user_funnel["int_user_funnel"]
+    end
+    subgraph marts
+        model_mobile_game_analytics_mart_channel_roi["mart_channel_roi"]
+        model_mobile_game_analytics_mart_funnel_by_channel["mart_funnel_by_channel"]
+        model_mobile_game_analytics_mart_funnel_step_rates["mart_funnel_step_rates"]
+        model_mobile_game_analytics_mart_installs_by_channel["mart_installs_by_channel"]
+    end
+    model_mobile_game_analytics_int_user_funnel --> model_mobile_game_analytics_mart_channel_roi
+    model_mobile_game_analytics_int_user_funnel --> model_mobile_game_analytics_mart_funnel_by_channel
+    model_mobile_game_analytics_int_user_funnel --> model_mobile_game_analytics_mart_funnel_step_rates
+    model_mobile_game_analytics_int_user_funnel --> model_mobile_game_analytics_mart_installs_by_channel
+    model_mobile_game_analytics_stg_game__users --> model_mobile_game_analytics_int_user_funnel
+    source_mobile_game_analytics_game_events --> model_mobile_game_analytics_stg_game__users
+```
+<!-- dbt-lineage:end -->
+
+### How `roas` in `mart_channel_roi` is built
+
+Reading backwards from the mart column to the source columns:
+
+**1. `dbt/models/marts/mart_channel_roi.sql`** computes the ratio from channel totals.
+
+```sql
+case when ad_spend > 0 then revenue / ad_spend end as roas
+```
+
+The totals come from an earlier step in the same model, grouped by `acquisition_channel`.
+
+```sql
+sum(revenue) as revenue,
+sum(ad_spend) as ad_spend
+```
+
+**2. `dbt/models/intermediate/int_user_funnel.sql`** holds one row per player and names the cost `ad_spend`.
+
+```sql
+coalesce(revenue, 0.0) as revenue,
+coalesce(cac, 0.0) as ad_spend
+```
+
+**3. `dbt/models/staging/stg_game__users.sql`** only casts the source columns. DuckDB identifiers are case-insensitive, so `cac` reads the `CAC` column.
+
+```sql
+cast(cac as double) as cac,
+cast(revenue as double) as revenue,
+```
+
+**4. Source `game.events`** is `data/processed/events.parquet`, written by `make data`. `CAC` is a fixed value per channel in `data/config/synthetic.yaml`, and `revenue` is generated per player with no channel effect, so ROAS differences across channels come from the configured CAC.
+
+### Tests
+
+`make dbt-build` runs every row below except the last one, which runs under `pytest -q`.
+
+| Test | Count | What it protects |
+|---|---|---|
+| `not_null` | 34 | No missing keys, flags, amounts or mart metrics |
+| `unique` | 5 | One row per player in staging and intermediate, one row per channel in the channel marts |
+| `accepted_values` | 8 | Known channel, country, platform and version labels; funnel flags stay 0 or 1 |
+| `dbt_utils.accepted_range` | 4 | Session count, CAC and revenue are not negative; ROI is not below -1 |
+| `assert_funnel_steps_do_not_increase` | 1 | Stage totals never rise from one step to the next, overall and per channel |
+| `assert_rates_between_zero_and_one` | 1 | Every `rate_*` column of the funnel marts stays between 0 and 1 |
+| `assert_channel_roi_formulas` | 1 | ROAS and ROI match their formulas |
+| `assert_channel_installs_match_staging` | 1 | Channel install counts add up to the distinct players in staging |
+| `tests/test_dbt_parity.py` | 4 | Each mart matches its reference SQL row by row |
+
+CI (`.github/workflows/ci.yml`) runs `make data`, `make dbt-build` and `pytest -q` on every push and pull request. The Cookie Cats file is not in this repository, so CI uses a fabricated raw file from `scripts/make_ci_raw_data.py`. A green badge means the pipeline and tests work. It does not validate the numbers in this README, which come from a local run on the real file.
 
 ---
 

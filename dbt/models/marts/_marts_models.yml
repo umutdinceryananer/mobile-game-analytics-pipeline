@@ -15,35 +15,31 @@ models:
           - not_null
 
   - name: mart_funnel_step_rates
-    description: >
-      One row with the overall funnel ratios. Each ratio compares two stage totals.
-      The stages are not nested cohorts, so these are not conversion rates.
+    description: "One row with the overall funnel ratios. {{ doc('funnel_step_rate') }}"
     columns:
       - name: n_users
         description: Total number of players.
         data_tests:
           - not_null
       - name: rate_install
-        description: Install total divided by player count.
+        description: "{{ doc('funnel_step_rate') }} Here, install total divided by player count."
         data_tests:
           - not_null
       - name: rate_d1_from_install
-        description: D1 return total divided by install total.
+        description: "{{ doc('d1_retention') }}"
         data_tests:
           - not_null
       - name: rate_d7_from_d1
-        description: D7 return total divided by D1 return total.
+        description: "{{ doc('funnel_step_rate') }} Here, D7 return total divided by D1 return total."
         data_tests:
           - not_null
       - name: rate_purchase_from_d7
-        description: Purchase total divided by D7 return total.
+        description: "{{ doc('funnel_step_rate') }} Here, purchase total divided by D7 return total."
         data_tests:
           - not_null
 
   - name: mart_funnel_by_channel
-    description: >
-      One row per acquisition channel with funnel ratios. Each ratio compares two
-      totals within the channel.
+    description: "One row per acquisition channel with funnel ratios. {{ doc('funnel_step_rate') }}"
     columns:
       - name: acquisition_channel
         description: Synthetic acquisition channel; the primary key.
@@ -55,11 +51,11 @@ models:
         data_tests:
           - not_null
       - name: rate_d1_from_install
-        description: D1 return total divided by player count.
+        description: "{{ doc('d1_retention') }}"
         data_tests:
           - not_null
       - name: rate_d7_from_d1
-        description: D7 return total divided by D1 return total.
+        description: "{{ doc('funnel_step_rate') }} Here, D7 return total divided by D1 return total."
         data_tests:
           - not_null
       - name: rate_purchase_overall
@@ -90,10 +86,10 @@ models:
         data_tests:
           - not_null
       - name: roi
-        description: (revenue - ad_spend) / ad_spend.
+        description: "{{ doc('roi') }}"
         data_tests:
           - not_null
       - name: roas
-        description: revenue / ad_spend.
+        description: "{{ doc('roas') }}"
         data_tests:
           - not_null
