@@ -4,7 +4,7 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 ![DuckDB](https://img.shields.io/badge/DuckDB-SQL-yellow?logo=duckdb&logoColor=white)
 
@@ -61,7 +61,7 @@ This section explains **how to run the project end'to'end**, how SQL/Notebooks a
 
 ### Prerequisites
 
-* Python **3.10+**
+* Python **3.11+** (the pinned `numpy==2.3.3` does not install on 3.10)
 * `pip` (or `pipx` if preferred)
 * Git
 * (Optional) **DuckDB** is installed via `requirements.txt` and used to run SQL over CSV/Parquet without a DB server.
