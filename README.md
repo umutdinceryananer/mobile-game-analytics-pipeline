@@ -366,19 +366,21 @@ cast(revenue as double) as revenue,
 
 **4. Source `game.events`** is `data/processed/events.parquet`, written by `make data`. `CAC` is a fixed value per channel in `data/config/synthetic.yaml`, and `revenue` is generated per player with no channel effect, so ROAS differences across channels come from the configured CAC.
 
+`revenue_per_install` in the same mart divides the same `revenue` total by `users`. It ranges from 0.53 to 0.58 across channels while spend per user ranges from 0.30 to 2.80, which shows that split directly.
+
 ### Tests
 
 `make dbt-build` runs every row below except the last one, which runs under `pytest -q`.
 
 | Test | Count | What it protects |
 |---|---|---|
-| `not_null` | 34 | No missing keys, flags, amounts or mart metrics |
+| `not_null` | 35 | No missing keys, flags, amounts or mart metrics |
 | `unique` | 5 | One row per player in staging and intermediate, one row per channel in the channel marts |
 | `accepted_values` | 8 | Known channel, country, platform and version labels; funnel flags stay 0 or 1 |
 | `dbt_utils.accepted_range` | 4 | Session count, CAC and revenue are not negative; ROI is not below -1 |
 | `assert_funnel_steps_do_not_increase` | 1 | Stage totals never rise from one step to the next, overall and per channel |
 | `assert_rates_between_zero_and_one` | 1 | Every `rate_*` column of the funnel marts stays between 0 and 1 |
-| `assert_channel_roi_formulas` | 1 | ROAS and ROI match their formulas |
+| `assert_channel_roi_formulas` | 1 | ROAS, ROI and revenue per install match their formulas |
 | `assert_channel_installs_match_staging` | 1 | Channel install counts add up to the distinct players in staging |
 | `tests/test_dbt_parity.py` | 4 | Each mart matches its reference SQL row by row |
 
