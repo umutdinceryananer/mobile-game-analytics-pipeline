@@ -90,6 +90,10 @@ pip install -r requirements.txt
 ./scripts/install.ps1
 ```
 
+**Get the raw data**
+
+The raw file is not part of this repository. Download `cookie_cats.csv` from [Mobile Games: A/B Testing on Kaggle](https://www.kaggle.com/datasets/yufengsui/mobile-games-ab-testing) and save it as `data/raw/cookie_cats.csv`. `make data` stops with a `FileNotFoundError` if the file is missing.
+
 ### Command-line Workflow
 
 After installing requirements, you can reproduce the pipeline without opening notebooks:
