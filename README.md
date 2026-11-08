@@ -36,20 +36,20 @@ This repository demonstrates a comprehensive analytics workflow for marketing pe
 
 #### Notebooks
 
-* 0.9-SQL-Validation-and-Samples.ipynb -> sql_analysis.ipynb
-    * Runs 3 canonical queries (daily installs, funnel step rates, ROI/ROAS) and validates notebook vs. SQL outputs.
+* 0.9-SQL-Validation-and-Samples.ipynb
+    * Runs the 4 SQL queries in `references/sql/` (installs by channel, funnel step rates, funnel by channel, ROI/ROAS) and compares the overlapping funnel columns against the Python output.
 
-* 1.0-EDA-and-Funnel.ipynb -> eda.ipynb
-    * Defines the funnel (install -> onboarding -> D1 -> purchase), produces the first KPI table and a funnel chart.
+* 1.0-EDA-and-Funnel.ipynb
+    * Defines the funnel stages (install, onboarding, D1, D7, purchase), produces the first KPI table and a funnel chart.
 
-* 2.0-ROI-and-ROAS-by-Channel.ipynb -> roas_analysis.ipynb
-    * Computes ROI/ROAS by acquisition channel (+optional platform), exports ranked tables and visuals, ends with 3 actionable recommendations.
+* 2.0-ROI-and-ROAS-by-Channel.ipynb
+    * Computes ROI/ROAS by acquisition channel and exports ranked tables and a ROAS chart.
 
 * 2.1-Retention-Cohorts.ipynb
-    * D1/D7 cohort heatmaps and top/bottom channel lists, with short commentary on implications.
+    * D1/D7 retention by channel and by version, plus a D7 heatmap by version and channel.
 
 * 3.0-Churn-Model.ipynb
-    * Builds the churn feature set, trains LogReg & XGBoost, records ROC/PR metrics, and exports risk segments + Tableau-ready artefacts.
+    * Builds the churn feature set, trains LogReg & XGBoost, records ROC/PR metrics and top-decile lift, and exports channel/platform risk segments.
 
 --------
 
@@ -163,7 +163,7 @@ mobile_game_analytics_pipeline/
 ### Data Inputs
 
 * Primary input: `data/processed/clean_data.csv` (or `data/processed/events.parquet`).
-* Notebook 0.9 (SQL) automatically **creates a DuckDB view `events`** from one of these files.
+* Notebook 0.9 (SQL) reads `clean_data.csv` and **creates the DuckDB views `users` and `events`**.
 * If neither file is present, notebooks will raise a clear error.
 
 ---
@@ -182,10 +182,10 @@ Run notebooks **top-down** in this order:
    Computes ROI/ROAS by channel; exports `roi_by_channel.csv` and `roi_by_channel.png`.
 
 4. **`2.1-Retention-Cohorts.ipynb`**
-   Produces D1/D7 cohort heatmaps; exports `retention_by_channel.csv` and `retention_heatmap.png`.
+   Produces D1/D7 retention tables and a D7 heatmap; exports `retention_by_channel.csv` and `retention_heatmap.png`.
 
 5. **`3.0-Churn-Model.ipynb`**
-   Churn classification (LogReg + XGBoost/LightGBM). Exports `model_metrics.json` and one key figure (`roc_pr_curves.png`).
+   Churn classification (LogReg + XGBoost). Exports `model_metrics.json` and one key figure (`roc_pr_curves.png`).
 
 ---
 
@@ -193,8 +193,9 @@ Run notebooks **top-down** in this order:
 
 SQL is stored in **`references/sql/`** and loaded from notebooks at runtime.
 
-* `references/sql/daily_installs.sql`
+* `references/sql/installs_by_channel.sql`
 * `references/sql/funnel_step_rates.sql`
+* `references/sql/funnel_by_channel.sql`
 * `references/sql/roi_by_channel.sql`
 
 ---
@@ -219,7 +220,7 @@ All notebooks **export tables and figures** to a consistent location:
 pytest -q
 ```
 
-* `tests/test_synthetic.py` validates schema, channel/country/platform distributions, ROI formula, and retention ratios for the synthetic dataset.
+* `tests/test_synthetic.py` validates the schema, allowed channel values, country and platform distributions, platform revenue shares, and the ROI formula for the synthetic dataset.
 * CLI smoke test: `make pipeline` (or run the Typer commands manually) regenerates data, features, and churn model artefacts end-to-end.
 
 #### Enabling Pre-commit Hooks
@@ -289,7 +290,7 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 * **ROI by Channel**
   <img width="1182" height="731" alt="roi_by_channel" src="https://github.com/user-attachments/assets/3dee4aca-f0bf-4e68-8d4c-1d2720f27bca" />
 
-* **Retention Cohort Heatmap (D1/D7)**
+* **D7 Retention Heatmap (version by channel)**
   <img width="1408" height="761" alt="retention_heatmap" src="https://github.com/user-attachments/assets/dfa39f95-d226-4744-bcb6-5cc17447732c" />
 
 * **Modeling **
