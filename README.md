@@ -4,6 +4,7 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
+[![CI](https://github.com/umutdinceryananer/mobile-game-analytics-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/umutdinceryananer/mobile-game-analytics-pipeline/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 ![DuckDB](https://img.shields.io/badge/DuckDB-SQL-yellow?logo=duckdb&logoColor=white)
@@ -177,7 +178,8 @@ mobile_game_analytics_pipeline/
 │  │  └─ marts/
 │  └─ tests/                   # singular tests
 ├─ scripts/
-│  └─ dbt_lineage_mermaid.py   # writes the README lineage diagram
+│  ├─ dbt_lineage_mermaid.py   # writes the README lineage diagram
+│  └─ make_ci_raw_data.py      # fabricated raw file, for CI only
 ├─ references/
 │  └─ sql/
 ├─ reports/
@@ -379,6 +381,8 @@ cast(revenue as double) as revenue,
 | `assert_channel_roi_formulas` | 1 | ROAS and ROI match their formulas |
 | `assert_channel_installs_match_staging` | 1 | Channel install counts add up to the distinct players in staging |
 | `tests/test_dbt_parity.py` | 4 | Each mart matches its reference SQL row by row |
+
+CI (`.github/workflows/ci.yml`) runs `make data`, `make dbt-build` and `pytest -q` on every push and pull request. The Cookie Cats file is not in this repository, so CI uses a fabricated raw file from `scripts/make_ci_raw_data.py`. A green badge means the pipeline and tests work. It does not validate the numbers in this README, which come from a local run on the real file.
 
 ---
 
