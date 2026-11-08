@@ -313,7 +313,7 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 * **Synthetic enrichment:** User acquisition fields (e.g., `acquisition_channel`, CAC/ad spend) are enriched and may not reflect production distributions.
 * **Schema/coverage:** Missing events or short time windows can bias retention and ROI estimates; metrics are indicative.
 * **Attribution simplification:** Channel attribution is single-touch in this demo; multi-touch or MMM would alter ROI interpretation.
-* **Model scope:** The churn classifiers are compact prototypes (no hyper-intensive tuning). Calibration and backtesting are included to keep results honest.
+* **Model scope:** The churn classifiers are compact prototypes with no hyperparameter search. Predicted probabilities are not calibrated: the logistic model uses `class_weight="balanced"`, so its scores work as a ranking rather than as churn probabilities.
 
 ---
 
