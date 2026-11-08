@@ -6,6 +6,8 @@ PROJECT_NAME = mobile_game_analytics_pipeline
 PYTHON_VERSION = 3.11
 PYTHON_INTERPRETER = python
 
+export DBT_PROFILES_DIR := $(CURDIR)/dbt
+
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
@@ -46,9 +48,24 @@ train:
 predict:
 	$(PYTHON_INTERPRETER) -m mobile_game_analytics_pipeline.modeling.predict
 
-## Run full pipeline (data -> features -> analytics -> train)
+## Install dbt packages
+.PHONY: dbt-deps
+dbt-deps:
+	cd dbt && dbt deps
+
+## Build dbt models and run their tests
+.PHONY: dbt-build
+dbt-build: dbt-deps
+	cd dbt && dbt build
+
+## Generate and serve the dbt documentation site
+.PHONY: dbt-docs
+dbt-docs: dbt-deps
+	cd dbt && dbt docs generate && dbt docs serve
+
+## Run full pipeline (data -> features -> analytics -> train -> dbt build)
 .PHONY: pipeline
-pipeline: data features analytics train
+pipeline: data features analytics train dbt-build
 
 #################################################################################
 # Self Documenting Commands                                                     #
