@@ -481,10 +481,10 @@ For the stored XGBoost model, the churn rate is 66.7% overall and 76.8% in the r
 ### Dashboard (Tableau)
 * [**Tableau Link**](https://public.tableau.com/views/MobileGameUAStory/TableauStory?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
 
-Built from an earlier run on the same synthetic data. The model dashboard shows logistic regression, and its "Avg Churn %" values are uncalibrated model scores, not churn rates.
+Built from an earlier run on the same synthetic data. The model dashboard shows logistic regression, and its risk values are uncalibrated model scores, not churn rates, even though the bar labels are formatted as percentages. The funnel chart stacks stages on a running-total axis, so read its percentage labels rather than its bar heights; the funnel table in Results has the stage totals.
 
-<img width="1415" height="1063" alt="Tableau Story Part 1" src="https://github.com/user-attachments/assets/61a34373-ea43-46af-ba2c-79cc4bfa10c5" />
-<img width="1415" height="1063" alt="Tableau Story Part 2" src="https://github.com/user-attachments/assets/5ab6fbba-b391-47a5-9d66-a86f7545c683" />
+<img width="1416" height="1062" alt="Tableau story, Performance Dashboard" src="docs/images/tableau_story_performance.png" />
+<img width="1416" height="1062" alt="Tableau story, Model Dashboard" src="docs/images/tableau_story_model.png" />
 
 ### Limitations & Assumptions
 
