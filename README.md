@@ -314,9 +314,6 @@ These are ratios of stage totals, not conversion rates, because the generated fl
 * **Funnel**
   <img width="1185" height="731" alt="funnel" src="https://github.com/user-attachments/assets/504a297a-5d47-4c4b-bf0d-dae14a6b4f10" />
 
-* **ROI by Channel**
-  <img width="1182" height="731" alt="roi_by_channel" src="https://github.com/user-attachments/assets/3dee4aca-f0bf-4e68-8d4c-1d2720f27bca" />
-
 * **D7 Retention Heatmap (version by channel)**
   <img width="1408" height="761" alt="retention_heatmap" src="https://github.com/user-attachments/assets/dfa39f95-d226-4744-bcb6-5cc17447732c" />
 
