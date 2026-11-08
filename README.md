@@ -155,6 +155,7 @@ mobile_game_analytics_pipeline/
 │  ├─ figures/
 │  └─ executive_summary.md
 ├─ tests/
+│  ├─ test_channel_effects.py
 │  └─ test_synthetic.py
 ├─ Makefile
 ├─ requirements.txt
@@ -219,11 +220,14 @@ All notebooks **export tables and figures** to a consistent location:
 
 ### Data Quality Checks & Testing
 
+Run these after `make pipeline`; the tests read `data/processed/events.parquet`.
+
 ```bash
 pytest -q
 ```
 
 * `tests/test_synthetic.py` validates the schema, allowed channel values, country and platform distributions, platform revenue shares, and the ROI formula for the synthetic dataset.
+* `tests/test_channel_effects.py` fits the generator's logistic form on `events.parquet` and checks that the retention channel effects set in the config are recovered within 3 standard errors, with a shuffled-label negative control. It also runs `analytics.py` and checks that Organic retention is above TikTok and that spend per user equals the config CAC.
 * CLI smoke test: `make pipeline` (or run the Typer commands manually) regenerates data, features, and churn model artefacts end-to-end.
 
 #### Enabling Pre-commit Hooks
