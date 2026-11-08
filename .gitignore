@@ -7,12 +7,23 @@ data/*
 !data/config/
 !data/raw/
 !data/processed/
+!data/warehouse/
 
 # Ignore generated contents but keep directory placeholders
 data/raw/*
 !data/raw/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
+data/warehouse/*
+!data/warehouse/.gitkeep
+
+# dbt artefacts
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+*.duckdb
+*.duckdb.wal
 
 # Still ignore interim/external
 data/interim/
