@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: stg_game__users
+    description: >
+      One row per player; the grain is user_id. Renames and casts the columns of
+      the events source and contains no business logic.
+    columns:
+      - name: user_id
+        description: Player identifier and primary key.
+      - name: version
+        description: A/B group from Cookie Cats.
+      - name: acquisition_channel
+        description: Synthetic acquisition channel.
+      - name: country
+        description: Synthetic country.
+      - name: platform
+        description: Synthetic platform.
+      - name: session_count
+        description: Game rounds played, from Cookie Cats sum_gamerounds.
+      - name: is_retained_d1
+        description: Whether the player returned on day 1 (regenerated).
+      - name: is_retained_d7
+        description: Whether the player returned on day 7 (regenerated).
+      - name: has_purchased
+        description: Whether the player made a purchase (synthetic).
+      - name: cac
+        description: Synthetic acquisition cost of this player.
+      - name: revenue
+        description: Synthetic revenue from this player.
+      - name: roi
+        description: Per-player (revenue - cac) / cac, as written by the generator.
