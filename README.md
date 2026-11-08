@@ -226,6 +226,10 @@ pytest -q
 
 This repository uses `pre-commit` hooks (formatting, lint checks, etc.). A fresh clone does not include the hook automatically; run the following once after setting up your environment:
 
+```bash
+pre-commit install
+```
+
 ---
 
 ### Reproducibility Notes
