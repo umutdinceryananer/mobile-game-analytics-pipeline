@@ -24,7 +24,7 @@ This repository demonstrates a comprehensive analytics workflow for marketing pe
 * **Funnel (ratios of stage totals):** Install to Onboarding 95.6%, Onboarding to D1 47.6%, D1 to D7 73.2%, D7 to Purchase 16.8%. The stages are not nested cohorts: 39.3% of D7 returners have no D1 return.
 * **Retention:** Overall D1 45.5%, D7 33.3%; Organic D1 47.7%, D7 35.2%. Among players who returned on D1, 44.4% also returned on D7 (Organic 45.5%).
 * **ROI:** Organic ROAS ~1.85 (ROI ~+85%); paid channels range 0.19-0.34 ROAS (ROI -66% to -81%).
-* **Churn model:** ROC-AUC ~0.61, PR-AUC ~0.58, accuracy ~0.60; top 10% risk bucket captures ~78% of churn (lift ~1.17x).
+* **Churn model:** ROC-AUC 0.622, PR-AUC 0.744, accuracy 0.665 (XGBoost, the model `make train` stored); top 10% risk bucket captures ~78% of churn (lift ~1.17x).
 
 ### Data & Scope
 
@@ -299,7 +299,7 @@ These are ratios of stage totals, not conversion rates, because the generated fl
 
 **Churn model**
 
-*Churn model (LogReg + XGBoost):* ROC-AUC  `0.607`, PR-AUC  `0.580`, accuracy  `0.602`; top 10% risk bucket captures ~`78%` of churn (lift  `1.17`).
+*Churn model (LogReg + XGBoost):* the stored XGBoost model scores ROC-AUC `0.622`, PR-AUC `0.744`, accuracy `0.665` on the 30% holdout; top 10% risk bucket captures ~`78%` of churn (lift  `1.17`).
 *Key segments:* Highest churn risk clusters in `Facebook` and `TikTok` installs on `Google Play`; see `reports/tables/churn_risk_segments.csv` for channel/platform drill-down.
 *Artifacts:* `make train` writes `reports/tables/backtest_scores.csv`, `reports/tables/model_metrics.json` and `reports/figures/roc_pr_curves.png`. `reports/tables/churn_risk_segments.csv` is written only by notebook 3.0 and `_run_churn.py`.
 
