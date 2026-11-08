@@ -21,7 +21,7 @@ This repository demonstrates a comprehensive analytics workflow for marketing pe
 
 ### Latest Metrics (synthetic run)
 
-* **Funnel:** Install -> Onboarding ~95.6%, Onboarding -> D1 ~47.6%, D1 -> Purchase ~16.8%.
+* **Funnel (ratios of stage totals):** Install to Onboarding 95.6%, Onboarding to D1 47.6%, D1 to D7 73.2%, D7 to Purchase 16.8%. The stages are not nested cohorts: 39.3% of D7 returners have no D1 return.
 * **Retention:** Overall D7 ~33.3%; Organic keeps ~73.8% of its D1 returners (D7 ~35.2%).
 * **ROI:** Organic ROAS ~1.85 (ROI ~+85%); paid channels range 0.19-0.34 ROAS (ROI -66% to -81%).
 * **Churn model:** ROC-AUC ~0.61, PR-AUC ~0.58, accuracy ~0.60; top 10% risk bucket captures ~78% of churn (lift ~1.17x).
@@ -272,10 +272,16 @@ This section summarizes key insights, embeds exported figures, and outlines limi
 
 **Acquisition & Funnel**
 
-* *Conversion funnel:* Install -> Onboarding -> D1 return -> Purchase. Current run shows:
-  * **Install -> Onboarding:** ~`95.6%` (baseline FTUE completion)
-  * **Onboarding -> D1:** ~`47.6%` (early retention health)
-  * **D1 -> Purchase:** ~`16.8%` (monetization gate)
+| Stage | Users | Share of installs | Ratio to previous stage |
+|---|---|---|---|
+| Install | 90,189 | 100.0% | |
+| Onboarding (`session_count` > 0) | 86,195 | 95.6% | 95.6% |
+| D1 return | 41,024 | 45.5% | 47.6% |
+| D7 return | 30,028 | 33.3% | 73.2% |
+| Purchase | 5,030 | 5.6% | 16.8% |
+
+These are ratios of stage totals, not conversion rates, because the generated flags are not nested: 11,798 D7 returners (39.3%) have no D1 return, 1,849 of the 5,030 purchasers have no D1 return, and 1,220 D1 returners have `session_count` = 0.
+
 * *Action:* Focus UX experiments on the largest drop (e.g., onboarding), and validate with an A/B test.
 
 **ROI/ROAS by Channel**
